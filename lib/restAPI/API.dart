@@ -1,9 +1,9 @@
 class ApiUrl{
 
-  static const String baseURL = "https://glitzystudio.ca/api/";
-  static const String demoUser = "demouser";
-  static const String apiKey = "dSmyc8dV77yogTbfpmIJyh97mba3llqaJWlf4GP9";
-  static const String token = "31fc311c855c692c93f1a3c3008dbde4";
+  static const String baseURL = "";
+  static const String demoUser = "";
+  static const String apiKey = "";
+  static const String token = "";
   static const String login = baseURL+ 'login';
 
   static const String logout = baseURL + 'logout';
