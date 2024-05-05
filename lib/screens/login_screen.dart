@@ -28,7 +28,7 @@ class _LoginscreenState extends State<Loginscreen> {
   // final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: '449772119504-6otlqrf344phacoe2ah92d5nhbia03un.apps.googleusercontent.com',
+    clientId: '',
   );
 
   void _submit() async {
