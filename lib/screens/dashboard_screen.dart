@@ -34,6 +34,8 @@ import 'package:glitzy/screens/list/profile_view_screen.dart';
 import 'package:glitzy/screens/password_change_screen.dart';
 import '../../../constants.dart';
 import '../screens/list/category_product_list.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glitzy/screens/list/horizontal_listview.dart';
 import 'dart:ui'; // Import this for Color class
 
 
@@ -55,6 +57,7 @@ class _DashboardState extends State<Dashboard> {
   List<Products> ?productsKurta = [];
   List<FeatureProduct> featureProductsList = []; // Fetch Feature Products List
   List<CatalogProduct> catalogProductsList = []; // Fetch Feature Products List
+
   int _currentPage = 0;
   final PageController _pageController = PageController();
   late Timer _timer;
@@ -72,6 +75,7 @@ class _DashboardState extends State<Dashboard> {
     _getKurtaProducts();
     _getCatalogProducts();
     _getCategoryProducts();
+
   }
 
 
@@ -301,8 +305,11 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
 
       drawer: Drawer(
@@ -461,6 +468,7 @@ class _DashboardState extends State<Dashboard> {
             icon: Icon(
               Icons.search,
               color: Colors.black,
+
             ),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(
@@ -473,7 +481,7 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: Icon(
               Icons.shopping_cart,
-              color: Colors.deepOrangeAccent,
+              color: Colors.orange,
             ),
             onPressed: () {
               Navigator.push(
@@ -503,32 +511,38 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
 
-      body: isLoading ? Center(
+      body: isLoading
+          ? Center(
         child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(CustomColor.accentColor)
+          valueColor: AlwaysStoppedAnimation<Color>(CustomColor.accentColor),
         ),
-      ) : ListView(
+      )
+          : Column(
         children: <Widget>[
-          //
-          _Banners(),
-          SizedBox(height: 10,),
-         // _HeaderImages(),
-          _CategoryTextWidget(),
-          _CategoriesImages(),
-          _Typebuild(), // Include _Typebuild() widget here
-          SizedBox(height: 10,),
-          // _bestProductsTextWidget(),
-          // _bestproductsWidget(),
-          _catalogProductsTextWidget(),
-          _catalogproductsWidget(),
-          _featureProductsTextWidget(),
-          _featureproductsWidget(),
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                _Banners(),
+                SizedBox(height: 10),
+                _categoryWidget(),
+                _CategoryTextWidget(),
+                _CategoriesImages(),
+                _Typebuild(),
+                SizedBox(height: 10),
+                _catalogProductsTextWidget(),
+                _catalogproductsWidget(),
+                // _featureProductsTextWidget(),
+                // _featureproductsWidget(),
+              ],
+            ),
+          ),
 
-
-          // Footerwidget(),
+          Footerwidget(),
         ],
       ),
+
     );
+
   }
 
   // _HeaderImages() {
@@ -596,7 +610,26 @@ class _DashboardState extends State<Dashboard> {
     )
         : Container(); // Return an empty container if banners is null or empty
   }
+  Widget _categoryWidget() {
+    return Column(
+      children: <Widget>[
+        // Padding widget
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15),
 
+          child: Container(
+
+            alignment: Alignment.centerLeft,
+            child: Text('Categories') ,
+
+          ),
+        ),
+
+        // Horizontal list view
+        HorizontalList(),
+      ],
+    );
+  }
 
 
   @override
@@ -604,15 +637,15 @@ class _DashboardState extends State<Dashboard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _buildTypeButton(context, 'Best', 'best'),
-        _buildTypeButton(context, 'Feature', 'feature'),
-        _buildTypeButton(context, 'Top', 'top'),
-
-        _buildTypeButton(context, 'New', 'new'),
+        _buildTypeButton(context, 'Best', 'best', "assets/images/Flash_Icon.svg"),
+        _buildTypeButton(context, 'Feature', 'feature', "assets/images/Game Icon.svg"),
+        _buildTypeButton(context, 'Top', 'top', "assets/images/Gift Icon.svg"),
+        _buildTypeButton(context, 'New', 'new', "assets/images/Bill Icon.svg"),
       ],
     );
   }
-  Widget _buildTypeButton(BuildContext context, String label, String type) {
+
+  Widget _buildTypeButton(BuildContext context, String label, String type, String imagePath, {String? text}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -622,25 +655,36 @@ class _DashboardState extends State<Dashboard> {
           ),
         );
       },
-      child: Container(
-        margin: EdgeInsets.only(),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          border: Border.all(color: Colors.grey.shade300, width: 1),
-          color: Colors.white,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: Colors.black, // Changed text color to black for better visibility
-            fontWeight: FontWeight.bold,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            height: 56,
+            width: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFECDF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: SvgPicture.asset(
+              imagePath,
+              width: 32, // Adjust the width as needed
+              height: 32, // Adjust the height as needed
+            ),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+          if (text != null) // Display additional text if provided
+            Text(
+              text,
+              style: TextStyle(fontSize: 10, color: Colors.grey),
+            ),
+        ],
       ),
     );
   }
-
 
   Widget _CategoryTextWidget() {
     return Padding(
@@ -697,6 +741,7 @@ class _DashboardState extends State<Dashboard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
+
           height: 200, // Adjust the height according to your needs
           child: PageView.builder(
             itemCount: (productsCategory!.length / 2).ceil(), // Display 2 products per page
@@ -726,10 +771,11 @@ class _DashboardState extends State<Dashboard> {
                             Container(
                               height: 130,
                               decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius:BorderRadius.circular(20),
+                                // border: Border.all(
+                                //   color: Colors.grey.withOpacity(0.5),
+                                // ),
+                                // borderRadius: BorderRadius.circular(16),
                                 image: DecorationImage(
                                   image: product.photo != null
                                       ? NetworkImage(product.photo!)
@@ -771,144 +817,144 @@ class _DashboardState extends State<Dashboard> {
   }
 
 
-  Widget _featureProductsTextWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15.0, right: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Kurta',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          InkWell(
-            child: Text(
-              'See More',
-              style: TextStyle(fontSize: 15, color: Colors.grey),
-            ),
-            // onTap: () {
-            //   Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => TypeProductsScreen(type: 'feature'),
-            //     ),
-            //   );
-            // },
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CategoryProduct(
-                    categoryId: 18.toString(), categoryName: '', // Pass the category ID as a string
-                  ),
-                ),
-              );
-            },
+  // Widget _featureProductsTextWidget() {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(left: 15.0, right: 15),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(
+  //           'Kurta',
+  //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+  //         ),
+  //         InkWell(
+  //           child: Text(
+  //             'See More',
+  //             style: TextStyle(fontSize: 15, color: Colors.grey),
+  //           ),
+  //           // onTap: () {
+  //           //   Navigator.push(
+  //           //     context,
+  //           //     MaterialPageRoute(
+  //           //       builder: (context) => TypeProductsScreen(type: 'feature'),
+  //           //     ),
+  //           //   );
+  //           // },
+  //           onTap: () {
+  //             Navigator.push(
+  //               context,
+  //               MaterialPageRoute(
+  //                 builder: (context) => CategoryProduct(
+  //                   categoryId: 18.toString(), categoryName: '', // Pass the category ID as a string
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //
+  //
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  @override
-  Widget _featureproductsWidget() {
-    if (productsKurta == null || productsKurta!.isEmpty) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    Timer? _timer;
-
-    void startTimer() {
-      _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-        if (_currentPage < (productsKurta!.length / 5).ceil() - 1) {
-          _currentPage++;
-        } else {
-          _currentPage = 0;
-        }
-      });
-    }
-
-    startTimer(); // Start the timer when the widget initializes
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 200, // Adjust the height according to your needs
-          child: PageView.builder(
-            itemCount: (productsKurta!.length / 2).ceil(), // Display 2 products per page
-            itemBuilder: (BuildContext context, int index) {
-              int startIndex = index * 2;
-              int endIndex = startIndex + 2;
-              return Row(
-                children: productsKurta!
-                    .sublist(startIndex, endIndex <= productsKurta!.length ? endIndex : productsKurta!.length)
-                    .map((product) {
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        // Navigate to product detail page
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Productdetail(productId: product.productId.toString()),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              height: 130,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                image: DecorationImage(
-                                  image: product.photo != null
-                                      ? NetworkImage(product.photo!)
-                                      : AssetImage('assets/images/noimage.png') as ImageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: kDefaultPaddin / 2),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
-                              child: Text(
-                                // products is out demo list
-                                '${product.name.toString()}',
-
-
-                                style: TextStyle(color: kTextLightColor),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
-                              child: Text(
-                                '\$${product.price ?? 0}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
+  // @override
+  // Widget _featureproductsWidget() {
+  //   if (productsKurta == null || productsKurta!.isEmpty) {
+  //     return Center(child: CircularProgressIndicator());
+  //   }
+  //
+  //   Timer? _timer;
+  //
+  //   void startTimer() {
+  //     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+  //       if (_currentPage < (productsKurta!.length / 5).ceil() - 1) {
+  //         _currentPage++;
+  //       } else {
+  //         _currentPage = 0;
+  //       }
+  //     });
+  //   }
+  //
+  //   startTimer(); // Start the timer when the widget initializes
+  //
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       SizedBox(
+  //         height: 200, // Adjust the height according to your needs
+  //         child: PageView.builder(
+  //           itemCount: (productsKurta!.length / 2).ceil(), // Display 2 products per page
+  //           itemBuilder: (BuildContext context, int index) {
+  //             int startIndex = index * 2;
+  //             int endIndex = startIndex + 2;
+  //             return Row(
+  //               children: productsKurta!
+  //                   .sublist(startIndex, endIndex <= productsKurta!.length ? endIndex : productsKurta!.length)
+  //                   .map((product) {
+  //                 return Expanded(
+  //                   child: GestureDetector(
+  //                     onTap: () async {
+  //                       // Navigate to product detail page
+  //                       await Navigator.push(
+  //                         context,
+  //                         MaterialPageRoute(
+  //                           builder: (context) => Productdetail(productId: product.productId.toString()),
+  //                         ),
+  //                       );
+  //                     },
+  //                     child: Padding(
+  //                       padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+  //                       child: Column(
+  //                         crossAxisAlignment: CrossAxisAlignment.start,
+  //                         children: <Widget>[
+  //                           Container(
+  //                             height: 130,
+  //                             decoration: BoxDecoration(
+  //                               border: Border.all(
+  //                                 color: Colors.grey.withOpacity(0.5),
+  //                               ),
+  //                               borderRadius: BorderRadius.circular(16),
+  //                               image: DecorationImage(
+  //                                 image: product.photo != null
+  //                                     ? NetworkImage(product.photo!)
+  //                                     : AssetImage('assets/images/noimage.png') as ImageProvider,
+  //                                 fit: BoxFit.cover,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           SizedBox(height: kDefaultPaddin / 2),
+  //                           Padding(
+  //                             padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+  //                             child: Text(
+  //                               // products is out demo list
+  //                               '${product.name.toString()}',
+  //
+  //
+  //                               style: TextStyle(color: kTextLightColor),
+  //                             ),
+  //                           ),
+  //                           Padding(
+  //                             padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+  //                             child: Text(
+  //                               '\$${product.price ?? 0}',
+  //                               style: TextStyle(fontWeight: FontWeight.bold),
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 );
+  //               }).toList(),
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
 //Catalog
   Widget _catalogProductsTextWidget() {
