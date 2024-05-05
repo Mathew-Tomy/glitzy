@@ -5,15 +5,17 @@ import 'package:glitzy/modals/Productdetail_modal.dart';
 import 'package:glitzy/restAPI/API.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:glitzy/screens/list/category_product_list.dart';
 import 'package:glitzy/screens/list/subcategory_product_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:glitzy/widgets/footer_widget.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 import 'list/cart_list_screen.dart';
-
+import 'package:glitzy/screens/products_moredetail_screen.dart';
+import 'package:glitzy/screens/top_rounded_container.dart';
 class Productdetail extends StatefulWidget {
 
 
@@ -91,268 +93,206 @@ class _ProductdetailState extends State<Productdetail> {
   }
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xFFF5F6F9),
       appBar: AppBar(
-        title: Text('Product detail',style: TextStyle(color: Colors.black),),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color:CustomColor.accentColor),
-        actions: <Widget>[
-          IconButton(
-            icon: wishlisted ?Icon(
-              Icons.favorite ,
-              color: Colors.red,
-            ) :  Icon(
-              Icons.favorite_border_outlined ,
+        title: Text(
+          'Product detail',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              padding: EdgeInsets.zero,
+              elevation: 0,
+              backgroundColor: Colors.white,
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios_new,
               color: Colors.black,
+              size: 20,
             ),
-            onPressed: () {
-              _addWishlist();
-              setState(() {
-                wishlisted = !wishlisted;
-              });
-            },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.home,
-              color: CustomColor.accentColor,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/dashboard");
-
-            },
-          )
-        ],
-      ),
-      body: isLoading ? Center(
-        child: CircularProgressIndicator(),
-      ) : _productWidget(),
-    );
-  }
-
-  Widget _productWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5.0, top: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        ),
+        actions: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  child: Image.network(
-                    products![0].photo.toString(),
-                    height: MediaQuery.of(context).size.height / 1.8,
-                    fit: BoxFit.fill,
-                  ),
+              Container(
+                margin: const EdgeInsets.only(right: 20),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    ListTile(
-                      title: Text(
-                        products![0].productName.toString(),
-                        style: TextStyle(
-                          color: CustomColor.accentColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    IconButton(
+                      icon: wishlisted
+                          ? Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      )
+                          : Icon(
+                        Icons.favorite_border_outlined,
+                        color: Colors.black,
                       ),
-                      subtitle: products![0].brand != null
-                          ? Text(products![0].brand.toString())
-                          : Text(products![0].brand ?? ''),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Available',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              border: Border.all(
-                                color: Colors.green,
-                              ),
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                products![0].stock.toString(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Categories:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      subtitle: Text(
-                        products![0].categoryName.toString(),
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CategoryProduct(
-                              categoryId: products![0].categoryId.toString(),
-                              categoryName: products![0].categoryName.toString(),
-                            ),
-                          ),
-                        );
+                      onPressed: () {
+                        _addWishlist();
+                        setState(() {
+                          wishlisted = !wishlisted;
+                        });
                       },
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Sub Categories:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      subtitle: Text(
-                        products![0].subcategoryName.toString(),
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubCategoryProduct(
-                              subcategoryId: products![0].subcategoryId.toString(),
-                              subcategoryName: products![0].subcategoryName.toString(),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        'CODE:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      subtitle: Text(
-                        products![0].code.toString(),
-                        style: TextStyle(fontSize: 15),
-                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: kDefaultPaddin / 2),
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                products![0].type.toString() == 'false'
-                    ? Text('')
-                    : Text(
-                  products![0].price.toString(),
-                  style: TextStyle(decoration: TextDecoration.lineThrough),
-                ),
-                products![0].type.toString() != 'false'
-                    ? Text(
-                  ' ${products![0].price.toString()} / \$${products![0].price.toString()}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                )
-                    : Text(
-                  '\$${products![0].price.toString()}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Description',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  products![0].sortDetails.toString(),
-                  style: TextStyle(fontSize: 15),
-                ),
-
-              ],
-            ),
-          ),
-          SizedBox(height: kDefaultPaddin),
-          SizedBox(height: kDefaultPaddin),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8),
-            child: products == null || products!.isEmpty
-                ? Text('Loading...') // Handle cases where products haven't loaded yet
-                : (products!.first.optionId != null && products!.first.optionId != 0)
-                ? DropdownButtonHideUnderline(
-              child: ButtonTheme(
-                alignedDropdown: true,
-                child: DropdownButtonFormField<String>(
-                  iconSize: 30,
-                  icon: null,
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                  ),
-                  hint: Text('Select Size', style: TextStyle(fontSize: 15)),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select a size';
-                    }
-                    return null;
-                  },
-                  value: optionId != null && optionId != 0 ? optionId.toString() : null,
-                  onChanged: (newValue) {
-                    setState(() {
-                      optionId = newValue != null ? int.tryParse(newValue) : null;
-                    });
-                  },
-                  items: (products![0].size ?? '').split(', ').where((size) => size.isNotEmpty).map((size) {
-                    return DropdownMenuItem<String>(
-                      value: products![0].optionId.toString(), // Store size directly
-                      child: Text(size),
-                    );
-                  }).toList(),
-                ),
-              ),
-            )
-                : Text(''), // Display nothing if optionId is null or 0
-
-          ),
-
-          SizedBox(height: kDefaultPaddin),
-          // Description
-          SizedBox(height: kDefaultPaddin),
-          SizedBox(height: 15),
-          _addingWidget(),
-
         ],
       ),
+      body: isLoading
+          ? Center(
+        child: CircularProgressIndicator(),
+      )
+          : ListView(
+        children: [
+          TopRoundedContainer(
+            color: Colors.white,
+            child: Column(
+              children: [
+                Image.network(
+                  products![0].photo.toString(),
+                  fit: BoxFit.cover,
+                  height: 185,
+                  width: 255,
+                ),
+                ListTile(
+                  title: Text(
+                    products![0].productName.toString(),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  subtitle: Text(
+                    'Price: \$${products![0].price.toString()}',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  //   subtitle: Text(
+                  //   products![0].brand != null
+                  //       ? Text(products![0].brand.toString())
+                  //       : Text(products![0].brand ?? ''),
+                  // ),
+                ),
+                ListTile(
+                  title: Text(
+                    'CODE:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text(
+                    products![0].code.toString(),
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+
+                ListTile(
+                  title: Text(
+                    'Description',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text(
+                    products![0].sortDetails.toString(),
+                    style: TextStyle(fontSize: 15),
+                  ),
+
+                ),
+                // Add more details about the product here
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Productmoredetail(
+                          productId: products![0].productId.toString(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "See More Detail",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ),
+
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8),
+                  child: products == null || products!.isEmpty
+                      ? Text('Loading...') // Handle cases where products haven't loaded yet
+                      : (products!.first.optionId != null && products!.first.optionId != 0)
+                      ? DropdownButtonHideUnderline(
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonFormField<String>(
+                        iconSize: 30,
+                        icon: null,
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                        ),
+                        hint: Text('Select Size', style: TextStyle(fontSize: 15)),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a size';
+                          }
+                          return null;
+                        },
+                        value: optionId != null && optionId != 0 ? optionId.toString() : null,
+                        onChanged: (newValue) {
+                          setState(() {
+                            optionId = newValue != null ? int.tryParse(newValue) : null;
+                          });
+                        },
+                        items: (products![0].size ?? '').split(', ').where((size) => size.isNotEmpty).map((size) {
+                          return DropdownMenuItem<String>(
+                            value: products![0].optionId.toString(), // Store size directly
+                            child: Text(size),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )
+                      : Text(''), // Display nothing if optionId is null or 0
+
+                ),
+
+
+                SizedBox(height: 15),
+                _addingWidget(),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+
+
+      persistentFooterButtons: [
+
+        Footerwidget(),
+      ],
     );
   }
 
