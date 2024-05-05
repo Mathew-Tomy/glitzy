@@ -155,7 +155,7 @@ class StripeCheckouts extends StatefulWidget {
           Uri.parse('https://api.stripe.com/v1/payment_intents'),
           body: body,
           headers: {
-            'Authorization': 'Bearer ' + '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',
+            'Authorization': 'Bearer ' + '',
             'Content-Type': 'application/x-www-form-urlencoded'
           },
         );
