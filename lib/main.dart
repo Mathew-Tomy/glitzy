@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:glitzy/screens/dashboard_screen.dart';
+import 'package:glitzy/screens/list/cart_list_screen.dart';
+import 'package:glitzy/screens/list/orders_list_screen.dart';
+import 'package:glitzy/screens/list/wishlist_products_screen.dart';
 import 'package:glitzy/screens/login_screen.dart';
 import 'package:glitzy/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +45,9 @@ class MyApp extends StatelessWidget {
       routes: {
         "/loginscreen":(context) => Loginscreen(),
         "/dashboard":(context) => Dashboard(),
+        '/cart': (context) => Cart(),
+        '/wishlist': (context) => Wishlist(),
+        '/order': (context) => Ordrslist(),
       },
     );
   }
