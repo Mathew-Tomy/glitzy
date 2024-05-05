@@ -155,6 +155,7 @@ class OpenFlutterEcommerceTheme {
         minWidth: 50,
         buttonColor: AppColors.red,
       ),
+
     );
   }
 }
